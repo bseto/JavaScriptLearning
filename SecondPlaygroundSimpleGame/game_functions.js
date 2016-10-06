@@ -12,12 +12,12 @@ function startGame() {
 var gameWorld = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width=300;
-        this.canvas.height=150;
+        this.canvas.width=900;
+        this.canvas.height=550;
         this.canvas.style="border:1px solid #d3d3d3;";
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGameArea, 2000);
+        this.interval = setInterval(updateGameArea, 30);
     },
     clear : function() {
         console.log("Clearing: width:" + this.canvas.width + "height:" + this.canvas.height);
@@ -32,9 +32,9 @@ function gameObject(width, height, color, x, y) {
     this.color = color;
     this.x = x;
     this.y = y;
-    this.velocity_x = 5;
-    this.velocity_y = 0.5;
-    this.gravity = 0.1;
+    this.velocity_x = 2;
+    this.velocity_y = 1.0;
+    this.gravity = 0.02;
 
     this.draw = function() {
         var context = gameWorld.context;
@@ -46,10 +46,30 @@ function gameObject(width, height, color, x, y) {
 
     this.update = function() {
         console.log("x:" + this.x)
+        console.log("y:" + this.y)
         this.x += this.velocity_x;
         this.velocity_y += this.gravity;
+        this.velocity_y *= 0.9985; //for friction
         this.y += this.velocity_y;
+
+        if (this.y > gameWorld.canvas.height) {
+            this.velocity_y = -this.velocity_y;
+        }
+        if (this.y < 0) {
+            this.velocity_y = -this.velocity_y;
+        }
+        if (this.x > gameWorld.canvas.width) {
+            this.velocity_x = -this.velocity_x;
+        }
+        if (this.x < 0) {
+            this.velocity_x = -this.velocity_x;
+        }
     }
+}
+
+function Thrust(n) {
+//naively assuming there is only 1 game object haha
+    mainPlayer.gravity = n;
 }
 
 function updateGameArea() {
